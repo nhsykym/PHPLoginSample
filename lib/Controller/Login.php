@@ -19,7 +19,7 @@ class Login extends \MyApp\Controller {
     try {
       $this->_validate();
     } catch (\MyApp\Exception\EmptyPost $e) {
-      $this->setErrors('login', $e->getMessage());
+      $this->setError('login', $e->getMessage());
     }
 
     $this->setValues('email', $_POST['email']);
@@ -29,16 +29,21 @@ class Login extends \MyApp\Controller {
     } else {
       try {
         $userModel = new \MyApp\Model\User();
-        $userModel->login([
+        $user = $userModel->login([
           'email' => $_POST['email'],
           'password' => $_POST['password']
         ]);
-      } catch(\MyApp\Exception\UnmatchEmailOr $e) {
-        $this->setErrors('email', $e->getMessage());
+      } catch(\MyApp\Exception\UnmatchEmailOrPassword $e) {
+        $this->setError('login', $e->getMessage());
         return;
       }
+
+      //login処理
+      session_regenerate_id(true);
+      $_SESSION['me'] = $user;
+
       // redirect to login
-      header('Location: ' . SITE_URL . '/login.php');
+      header('Location: ' . SITE_URL);
       exit;
     }
 
@@ -49,12 +54,13 @@ class Login extends \MyApp\Controller {
       echo "Invalid token!";
       exit;
     }
-    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-      throw new \MyApp\Exception\InvalidEmail();
+    if (!isset($_POST['email']) || !isset($_POST['password'])) {
+      echo "Invalid Form!";
+      exit;
     }
 
-    if (!preg_match('/\A[a-zA-Z0-9]+\z/', $_POST['password'])) {
-      throw new \MyApp\Exception\InvalidPassword();
+    if ($_POST['email'] === '' || $_POST['password'] === '') {
+      throw new \MyApp\Exception\EmptyPost();
     }
   }
 

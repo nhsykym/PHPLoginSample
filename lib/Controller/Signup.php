@@ -22,11 +22,11 @@ class Signup extends \MyApp\Controller {
     } catch (\MyApp\Exception\InvalidEmail $e) {
       // echo $e->getMessage();
       // exit;
-      $this->setErrors('email', $e->getMessage());
+      $this->setError('email', $e->getMessage());
     } catch (\MyApp\Exception\InvalidPassword $e) {
       // echo $e->getMessage();
       // exit;
-      $this->setErrors('password', $e->getMessage());
+      $this->setError('password', $e->getMessage());
     }
 
     $this->setValues('email', $_POST['email']);
@@ -42,7 +42,7 @@ class Signup extends \MyApp\Controller {
           'password' => $_POST['password']
         ]);
       } catch(\MyApp\Exception\DuplicateEmail $e) {
-        $this->setErrors('email', $e->getMessage());
+        $this->setError('email', $e->getMessage());
         return;
       }
       // redirect to login

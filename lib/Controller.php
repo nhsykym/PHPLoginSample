@@ -22,7 +22,7 @@ class Controller {
     return $this->_values;
   }
 
-  protected function setErrors($key, $error) {
+  protected function setError($key, $error) {
     $this->_errors->$key = $error;
   }
   
